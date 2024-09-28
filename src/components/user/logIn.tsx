@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axiosInstance from "../../api/axiosInstance.ts";
+import { axiosInstance } from "../../api/axiosInstance.ts";
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
