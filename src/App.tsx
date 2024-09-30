@@ -1,9 +1,15 @@
-import Login from "./components/auth/logIn.tsx";
-
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import SignUp from "../src/components/auth/signUp.tsx";
+import { LoginForm } from "./components/auth/logIn.tsx";
 function App() {
   return (
     <>
-      <h1>Hellow world</h1> <Login />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/signUp" element={<SignUp />} />
+          <Route path="/logIn" element={<LoginForm />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }

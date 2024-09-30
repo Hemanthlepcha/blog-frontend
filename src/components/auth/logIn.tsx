@@ -1,43 +1,69 @@
 import React, { useState } from "react";
-import { axiosInstance } from "../../api/axiosInstance.ts";
-const Login: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+import axios from "axios";
 
-  const handleSubmit = async (e: React.FormEvent) => {
+interface LoginFormProps {
+  onLoginSuccess: (userData: {
+    id: string;
+    email: string;
+    name: string;
+  }) => void;
+}
+
+export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null); // Reset error before attempting login
+
     try {
-      const response = await axiosInstance.post("/login", { email, password });
+      const response = await axios.post("/users/logIn", {
+        email,
+        password,
+      });
+
       if (response.status === 200) {
-        // Login successful, cookies are automatically stored in the browser
-        console.log("Login successful");
+        const { user, token } = response.data;
+        document.cookie = `token=${token}; path=/; HttpOnly; Secure; SameSite=Strict`;
+
+        onLoginSuccess(user);
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || "Login failed");
+    } catch (err: any) {
+      if (err.response && err.response.status === 401) {
+        setError("Invalid email or password");
+      } else {
+        setError("Server error, please try again later.");
+      }
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        placeholder="Password"
-        required
-      />
-      <button type="submit">Login</button>
-      {error && <p>{error}</p>}
-    </form>
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <div>
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <button type="submit">Log In</button>
+      </form>
+    </div>
   );
 };
-
-export default Login;

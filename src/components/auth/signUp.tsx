@@ -2,24 +2,35 @@ import React, { useState } from "react";
 import { axiosInstance } from "../../api/axiosInstance.ts";
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
+  console.log("email", password);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axiosInstance.post("/login", { email, password });
+      const response = await axiosInstance.post("/users/createUser", {
+        name,
+        email,
+        password,
+      });
       if (response.status === 200) {
-        // Login successful, cookies are automatically stored in the browser
-        console.log("Login successful");
+        console.log("user created successful");
       }
     } catch (error: any) {
-      setError(error.response?.data?.message || "Login failed");
+      setError(error.response?.data?.message || "Account creation failed");
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
+      <input
+        type="name"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+        required
+      />
       <input
         type="email"
         value={email}
@@ -34,7 +45,7 @@ const Login: React.FC = () => {
         placeholder="Password"
         required
       />
-      <button type="submit">Login</button>
+      <button type="submit">Sign Up</button>
       {error && <p>{error}</p>}
     </form>
   );
