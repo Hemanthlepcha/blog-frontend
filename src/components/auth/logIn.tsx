@@ -16,7 +16,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); // Reset error before attempting login
+    setError(null);
 
     try {
       const response = await axios.post("/users/logIn", {
